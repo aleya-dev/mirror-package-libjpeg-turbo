@@ -1,6 +1,6 @@
 from conan import ConanFile
 from conan.tools.cmake import CMakeToolchain
-from conan.tools.files import rmdir, collect_libs
+from conan.tools.files import rmdir, rename
 import os
 
 
@@ -31,6 +31,7 @@ class LibJpegTurboConan(ConanFile):
         tc.variables["BUILD_SHARED_LIBS"] = self.options.shared
         tc.variables["ENABLE_SHARED"] = self.options.shared
         tc.variables["ENABLE_STATIC"] = not self.options.shared
+        tc.variables["WITH_JPEG8"] = True
         tc.generate()
 
     def package(self):
@@ -38,13 +39,18 @@ class LibJpegTurboConan(ConanFile):
 
         rmdir(self, os.path.join(self.package_folder, "bin"))
         rmdir(self, os.path.join(self.package_folder, "share"))
+        rename(self, os.path.join(self.package_folder, "lib64"), os.path.join(self.package_folder, "lib"))
         rmdir(self, os.path.join(self.package_folder, "lib", "cmake"))
         rmdir(self, os.path.join(self.package_folder, "lib", "pkgconfig"))
 
     def package_info(self):
         self.cpp_info.set_property("cmake_find_mode", "both")
         self.cpp_info.set_property("cmake_module_file_name", "JPEG")
-        self.cpp_info.set_property("cmake_file_name", "libjpeg-turbo")
 
-        self.cpp_info.components["turbojpeg"].libs = collect_libs(self)
+        self.cpp_info.components["turbojpeg"].libs = ["turbojpeg"]
+        self.cpp_info.components["turbojpeg"].set_property("cmake_file_name", "libjpeg-turbo")
         self.cpp_info.components["turbojpeg"].set_property("cmake_target_name", "libjpeg-turbo::turbojpeg-static")
+
+        self.cpp_info.components["jpeg8"].libs = ["jpeg"]
+        self.cpp_info.components["jpeg8"].set_property("cmake_file_name", "JPEG")
+        self.cpp_info.components["jpeg8"].set_property("cmake_target_name", "JPEG::JPEG")
