@@ -39,7 +39,10 @@ class LibJpegTurboConan(ConanFile):
 
         rmdir(self, os.path.join(self.package_folder, "bin"))
         rmdir(self, os.path.join(self.package_folder, "share"))
-        rename(self, os.path.join(self.package_folder, "lib64"), os.path.join(self.package_folder, "lib"))
+
+        if self.settings.os != "Windows":
+            rename(self, os.path.join(self.package_folder, "lib64"), os.path.join(self.package_folder, "lib"))
+
         rmdir(self, os.path.join(self.package_folder, "lib", "cmake"))
         rmdir(self, os.path.join(self.package_folder, "lib", "pkgconfig"))
 
