@@ -47,13 +47,16 @@ class LibJpegTurboConan(ConanFile):
         rmdir(self, os.path.join(self.package_folder, "lib", "pkgconfig"))
 
     def package_info(self):
+        if self.settings.os == "Windows" and not self.options.shared:
+            lib_postfix = "-static"
+
         self.cpp_info.set_property("cmake_find_mode", "both")
         self.cpp_info.set_property("cmake_module_file_name", "JPEG")
 
-        self.cpp_info.components["turbojpeg"].libs = ["turbojpeg"]
+        self.cpp_info.components["turbojpeg"].libs = ["turbojpeg" + lib_postfix]
         self.cpp_info.components["turbojpeg"].set_property("cmake_file_name", "libjpeg-turbo")
         self.cpp_info.components["turbojpeg"].set_property("cmake_target_name", "libjpeg-turbo::turbojpeg-static")
 
-        self.cpp_info.components["jpeg8"].libs = ["jpeg"]
+        self.cpp_info.components["jpeg8"].libs = ["jpeg" + lib_postfix]
         self.cpp_info.components["jpeg8"].set_property("cmake_file_name", "JPEG")
         self.cpp_info.components["jpeg8"].set_property("cmake_target_name", "JPEG::JPEG")
